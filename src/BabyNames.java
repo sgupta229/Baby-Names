@@ -4,19 +4,22 @@ import java.net.*;
 
 public class BabyNames {
 
-    private HashMap<Integer, HashMap<String, Integer>> malePopular = new HashMap<>();
-    private HashMap<Integer, HashMap<String, Integer>> femalePopular = new HashMap<>();
     private HashMap<Integer, HashMap<String, Integer>> totalPopular = new HashMap<>();
-    private int startYear = Integer.MAX_VALUE;
-    private int endYear = Integer.MIN_VALUE;
     private HashMap<Integer, HashMap<String, Integer>> maleRankings = new HashMap<>();
     private HashMap<Integer, HashMap<String, Integer>> femaleRankings = new HashMap<>();
-    private HashMap<Integer, HashMap<String, Integer>> noGenderRankings = new HashMap<>();
+    private HashMap<Integer, HashMap<String, Integer>> genderRankings = new HashMap<>();
+    private int startYear = Integer.MAX_VALUE;
+    private int endYear = Integer.MIN_VALUE;
 
     //TO CHANGE LOCATION OF THE DATA
     //ENTER the pathname to the folder or the URL to the website
     private String dataLocation;
     private boolean typeURL;
+
+    public BabyNames(String pathname, boolean url) {
+        dataLocation = pathname;
+        typeURL = url;
+    }
 
     public void setTypeURL(boolean type) {
         this.typeURL = type;
@@ -99,11 +102,7 @@ public class BabyNames {
                     maleYear.put(currentNameArray[0], Integer.parseInt(currentNameArray[2]));
                 }
             }
-
-            malePopular.put(year, maleYear);
-            femalePopular.put(year, femaleYear);
         }
-
         catch (IOException ex) {
             System.out.println("Website not found");
         }
@@ -111,11 +110,13 @@ public class BabyNames {
 
     public void setDataInYear(int year) {
 
-        HashMap<String, Integer> maleYear = new HashMap<>();
-        HashMap<String, Integer> femaleYear = new HashMap<>();
         HashMap<String, Integer> maleYearRank = new HashMap<>();
         HashMap<String, Integer> femaleYearRank = new HashMap<>();
         HashMap<String, Integer> totalPop = new HashMap<>();
+        HashMap<String, Integer> genderYear = new HashMap<>();
+
+        genderYear.put("f", 0);
+        genderYear.put("m", 0);
 
         int femaleCount = 0;
         int maleCount = 0;
@@ -136,13 +137,13 @@ public class BabyNames {
                 String[] currentNameArray = currentName.split(",");
                 if(currentNameArray[1].equals("F")) {
                     femaleCount++;
-                    femaleYear.put(currentNameArray[0].toLowerCase(), Integer.parseInt(currentNameArray[2]));
                     femaleYearRank.put(currentNameArray[0].toLowerCase(), femaleCount);
+                    genderYear.put("f", genderYear.get("f") + Integer.parseInt(currentNameArray[2]));
                 }
                 else {
                     maleCount++;
-                    maleYear.put(currentNameArray[0].toLowerCase(), Integer.parseInt(currentNameArray[2]));
                     maleYearRank.put(currentNameArray[0].toLowerCase(), maleCount);
+                    genderYear.put("m", genderYear.get("m") + Integer.parseInt(currentNameArray[2]));
                 }
                 if(totalPop.containsKey(currentNameArray[0].toLowerCase())) {
                     totalPop.put(currentNameArray[0].toLowerCase(), (totalPop.get(currentNameArray[0].toLowerCase())) + Integer.parseInt(currentNameArray[2]));
@@ -152,12 +153,10 @@ public class BabyNames {
                 }
             }
 
-            malePopular.put(year, maleYear);
-            femalePopular.put(year, femaleYear);
             totalPopular.put(year, totalPop);
-
             maleRankings.put(year, maleYearRank);
             femaleRankings.put(year, femaleYearRank);
+            genderRankings.put(year, genderYear);
         }
 
         catch (FileNotFoundException e) {
@@ -189,16 +188,6 @@ public class BabyNames {
         return new HashMap<>();
     }
 
-    public HashMap<Integer, HashMap<String, Integer>> whichPopularityMap(String gender) {
-        if(gender.toLowerCase().equals("male") || gender.toLowerCase().equals("m")) {
-            return this.malePopular;
-        }
-        else if (gender.toLowerCase().equals("female") || gender.toLowerCase().equals("f")){
-            return this.femalePopular;
-        }
-        return new HashMap<>();
-    }
-
     public boolean validGender(String gender) {
         if (!(gender.toLowerCase().equals("male") || gender.toLowerCase().equals("m") ||
                 gender.toLowerCase().equals("female") || gender.toLowerCase().equals("f"))) {
@@ -208,6 +197,18 @@ public class BabyNames {
         else {
             return true;
         }
+    }
+
+    public String mostPopularName(int year) {
+        int max = 0;
+        String topPerson = "";
+        for(String person : totalPopular.get(year).keySet()) {
+            if (totalPopular.get(year).get(person) > max) {
+                max = totalPopular.get(year).get(person);
+                topPerson = person;
+            }
+        }
+        return topPerson;
     }
 
     public ArrayList<Integer> allYears(String name, String gender) {
@@ -345,8 +346,136 @@ public class BabyNames {
     }
 
     //method for question number 5
-    
+    public String mostPopularName(int start, int end) {
 
+        if (validYear(start) == false || validYear(end) == false) {
+            System.out.println("Invalid year inputted");
+            return "";
+        }
+
+        HashMap<String, Integer> topRankers = new HashMap<>();
+        for(int i = start; i < end + 1; i++) {
+            String topPerson = mostPopularName(i);
+            if(topRankers.containsKey(topPerson)) {
+                topRankers.put(topPerson, topRankers.get(topPerson) + 1);
+            }
+            else {
+                topRankers.put(topPerson, 1);
+            }
+        }
+        int finalMax = 0;
+        String finalWinner = "";
+        for(String toppers : topRankers.keySet()) {
+            if(topRankers.get(toppers) > finalMax) {
+                finalMax = topRankers.get(toppers);
+                finalWinner = toppers;
+            }
+        }
+        return "The most popular name from years " + start + " to year " + end + " was " + finalWinner + ". This name was ranked first " +
+                finalMax + " times.";
+    }
+
+    //Method for question number 6
+    public String mostPopularGender(int start, int end) {
+        if (validYear(start) == false || validYear(end) == false) {
+            System.out.println("Invalid year inputted");
+            return "";
+        }
+        int maleWins = 0;
+        int femaleWins = 0;
+        int ties = 0;
+        for(int i = start; i < end + 1; i++) {
+            if(genderRankings.get(i).get("m") > genderRankings.get(i).get("f")) {
+                maleWins++;
+            }
+            else if (genderRankings.get(i).get("m") < genderRankings.get(i).get("f")) {
+                femaleWins++;
+            }
+            else {
+                ties++;
+            }
+        }
+        String finalWinner;
+        HashMap<Integer, HashMap<String, Integer>> use;
+        if(maleWins > femaleWins) {
+            use = this.maleRankings;
+            finalWinner = "male";
+        }
+        else if (maleWins < femaleWins){
+            use = this.femaleRankings;
+            finalWinner = "female";
+        }
+        else {
+            return "Both genders were the most popular in this range of years " + maleWins + " times.";
+        }
+        int numYear = 0;
+        for(int i = start; i < end + 1; i++) {
+            String topPerson = mostPopularName(i);
+            if(use.get(i).containsKey(topPerson)) {
+                numYear++;
+            }
+        }
+        return "The most popular gender: " + finalWinner + ". A " + finalWinner + " ranked as the most popular name " +
+                numYear + " times.";
+    }
+
+
+
+    //method for question number 7 and 8
+    public String popularLetter(String gender, int start, int end) {
+
+        HashMap<Character, Integer> letterCounts = new HashMap<>();
+        HashMap<Integer, HashMap<String, Integer>> use;
+
+        if (validYear(start) == false || validYear(end) == false) {
+            System.out.println("Invalid year inputted");
+            return "";
+        }
+        if(gender.toLowerCase().equals("f") || gender.toLowerCase().equals("female")) {
+            use = femaleRankings;
+        }
+        else if(gender.toLowerCase().equals("m") || gender.toLowerCase().equals("male")) {
+            use = maleRankings;
+        }
+        else {
+            use = totalPopular;
+        }
+        for(int i = start; i < end + 1; i++) {
+            for(String person : use.get(i).keySet()) {
+                if(letterCounts.containsKey(person.charAt(0))) {
+                    letterCounts.put(person.charAt(0), letterCounts.get(person.charAt(0)) + 1);
+                }
+                else {
+                    letterCounts.put(person.charAt(0), 1);
+                }
+            }
+        }
+        char maxChar = 'b';
+        int maxNum = 0;
+        for(char i : letterCounts.keySet()) {
+            if(letterCounts.get(i) > maxNum) {
+                maxChar = i;
+                maxNum = letterCounts.get(i);
+            }
+        }
+
+        Set<String> finalNames = new HashSet<>();
+
+        for(int i = start; i < end + 1; i++) {
+            for(String person : use.get(i).keySet()) {
+                if(person.charAt(0) == (maxChar)) {
+                    finalNames.add(person);
+                }
+            }
+        }
+
+        List<String> finalList = new ArrayList<>();
+        finalList.addAll(finalNames);
+
+        Collections.sort(finalList);
+        System.out.println("Most popular letter: " + maxChar);
+        return Arrays.toString(finalList.toArray());
+    }
 }
 
 

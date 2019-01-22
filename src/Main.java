@@ -1,8 +1,6 @@
 public class Main {
     public static void main(String[] args) {
-        BabyNames b = new BabyNames();
-        b.setTypeURL(false);
-        b.setDataLocation("/Users/SGGS1234/Desktop/workspace307/data_sg390/data/fullData");
+        BabyNames b = new BabyNames("/Users/SGGS1234/Desktop/workspace307/data_sg390/data/fullData", false);
         b.storeAllData();
         System.out.println(b.getStartYear());
         System.out.println(b.getEndYear());
@@ -48,6 +46,16 @@ public class Main {
 
         System.out.println("Average rank over range");
         System.out.println(b.averageRankOverRange("Sam", 1989, 2017));
+        System.out.println("\n");
+
+        System.out.println(b.mostPopularName(1989, 2017));
+        System.out.println("\n");
+
+        System.out.println(b.mostPopularGender(1989, 2017));
+        System.out.println("\n");
+
+        System.out.println(b.popularLetter("m", 2000, 2017));
+        System.out.println("\n");
 
     }
 }
