@@ -3,22 +3,23 @@ data
 
 This project uses data about [baby names from the US Social Security Administration](https://www.ssa.gov/oact/babynames/limits.html) to answer specific questions. 
 
-Name: 
+Name: Sahil Gupta
 
 ### Timeline
 
-Start Date: 
+Start Date: 1/19/19
 
-Finish Date: 
+Finish Date: 1/22/19
 
-Hours Spent:
+Hours Spent: 12
 
 ### Resources Used
 
+Stack Overflow, Piazza
 
 ### Running the Program
 
-Main class:
+Main class: Main.java
 
 Data sets used and created: 
 
@@ -30,6 +31,8 @@ Extra credit:
 
 
 ### Notes
+
+
 
 
 ### Impressions

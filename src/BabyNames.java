@@ -10,11 +10,11 @@ public class BabyNames {
     private HashMap<Integer, HashMap<String, Integer>> genderRankings = new HashMap<>();
     private int startYear = Integer.MAX_VALUE;
     private int endYear = Integer.MIN_VALUE;
-
+    private boolean typeURL;
     //TO CHANGE LOCATION OF THE DATA
     //ENTER the pathname to the folder or the URL to the website
     private String dataLocation;
-    private boolean typeURL;
+
 
     public BabyNames(String pathname, boolean url) {
         dataLocation = pathname;
@@ -48,7 +48,6 @@ public class BabyNames {
         ArrayList<Integer> popOfPerson = new ArrayList<>();
         HashMap<Integer, HashMap<String, Integer>> use;
         if(validYear(start) == false || validYear(end) == false) {
-            System.out.println("Invalid year inputted");
             return popOfPerson;
         }
         if(validGender(gender) == false) {
@@ -75,7 +74,6 @@ public class BabyNames {
         HashMap<Integer, HashMap<String, Integer>> use;
         name = name.toLowerCase();
         if(validYear(year) == false) {
-            System.out.println("Invalid year inputted");
             return "";
         }
         if (validGender(gender) == false) {
@@ -105,10 +103,9 @@ public class BabyNames {
     //QUESTION 2 - reports average rank for a specific name within the range of years
     public double averageGenderRankOverRange(String name, String gender, int start, int end) {
         name = name.toLowerCase();
-        int calculate = 0;
+        double calculate = 0;
         HashMap<Integer, HashMap<String, Integer>> use;
         if (validYear(start) == false || validYear(end) == false) {
-            System.out.println("Invalid year inputted");
             return -1;
         }
         if(validGender(gender) == false) {
@@ -124,7 +121,7 @@ public class BabyNames {
             }
             calculate += use.get(i).get(name);
         }
-        return ((double) calculate / ((double) end - (double) start + 1.0));
+        return (calculate / ((double) end - (double) start + 1.0));
     }
 
     //QUESTION 3 - report average rank of the name regardless of gender
@@ -132,12 +129,11 @@ public class BabyNames {
         name = name.toLowerCase();
 
         if (validYear(start) == false || validYear(end) == false) {
-            System.out.println("Invalid year inputted");
             return -1;
         }
 
         HashMap<String, Integer> use;
-        int averagePopularity = 0;
+        double averagePopularity = 0;
         for(int i = start; i < end + 1; i++) {
             use = totalPopular.get(i);
             if(totalPopular.get(i).get(name) == null) {
@@ -153,7 +149,7 @@ public class BabyNames {
             }
             averagePopularity += peopleAbove;
         }
-        return averagePopularity / (end - start + 1);
+        return averagePopularity / ((double) end - (double) start + 1.0);
     }
 
     //QUESTION 4 - reports average rank of a name for the most recent number of years
@@ -166,7 +162,6 @@ public class BabyNames {
     public String mostPopularName(int start, int end) {
 
         if (validYear(start) == false || validYear(end) == false) {
-            System.out.println("Invalid year inputted");
             return "";
         }
 
@@ -195,21 +190,16 @@ public class BabyNames {
     //QUESTION 6 - report which gender was more popular and how many years this gender was the most popular name
     public String mostPopularGender(int start, int end) {
         if (validYear(start) == false || validYear(end) == false) {
-            System.out.println("Invalid year inputted");
             return "";
         }
         int maleWins = 0;
         int femaleWins = 0;
-        int ties = 0;
         for(int i = start; i < end + 1; i++) {
             if(genderRankings.get(i).get("m") > genderRankings.get(i).get("f")) {
                 maleWins++;
             }
             else if (genderRankings.get(i).get("m") < genderRankings.get(i).get("f")) {
                 femaleWins++;
-            }
-            else {
-                ties++;
             }
         }
         String finalWinner;
@@ -244,10 +234,6 @@ public class BabyNames {
         HashMap<Character, Integer> letterCounts = new HashMap<>();
         HashMap<Integer, HashMap<String, Integer>> use;
         if (validYear(start) == false || validYear(end) == false) {
-            System.out.println("Invalid year inputted");
-            return "";
-        }
-        if(validGender(gender) == false) {
             return "";
         }
         if(gender.toLowerCase().equals("f") || gender.toLowerCase().equals("female")) {
@@ -297,17 +283,47 @@ public class BabyNames {
     ///////////////////////////////////////////////////
 
     //checks to make sure user inputted a valid year into a method
-    public boolean validYear(int year) {
-        return(startYear <= year &&  year <= endYear);
-    }
 
     //checks to see what the range of years the dataset has
-    public void findRangeOfYears() {
-        for(int year = 1850; year < 2020; year++) {
-            if(typeURL == false) {
-                String filename = dataLocation + "/yob" + year + ".txt";
-                File f = new File(filename);
-                if(f.getAbsoluteFile().exists() ==  true) {
+
+    public boolean checkURLValid(String checkThisWebsite) {
+        try {
+            URL url = new URL(checkThisWebsite);
+            HttpURLConnection huc = (HttpURLConnection) url.openConnection();
+            int responseCode = huc.getResponseCode();
+            if (responseCode != 404) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        catch (IOException e) {
+            System.out.println("Finding .txt files in URL ... ");
+            return false;
+        }
+    }
+
+    public void findRangeOfYears() throws IOException {
+        if(typeURL == false) {
+            for(int year = 1850; year < 2020; year++) {
+                if(typeURL == false) {
+                    String filename = dataLocation + "/yob" + year + ".txt";
+                    File f = new File(filename);
+                    if(f.getAbsoluteFile().exists() ==  true) {
+                        if (year < this.startYear) {
+                            this.startYear = year;
+                        }
+                        if (year > this.endYear) {
+                            this.endYear = year;
+                        }
+                    }
+                }
+            }
+        }
+        else {
+            for(int year = 1880; year < 2020; year++) {
+                String website = dataLocation + "yob" + year + ".txt";
+                if(checkURLValid(website)) {
                     if (year < this.startYear) {
                         this.startYear = year;
                     }
@@ -319,11 +335,20 @@ public class BabyNames {
         }
     }
 
-    public void setDataInYearURL(int year) {
-        HashMap<String, Integer> maleYear = new HashMap<>();
-        HashMap<String, Integer> femaleYear = new HashMap<>();
+    public void setDataInYearURL(int year) throws IOException {
+        HashMap<String, Integer> maleYearRank = new HashMap<>();
+        HashMap<String, Integer> femaleYearRank = new HashMap<>();
+        HashMap<String, Integer> totalPop = new HashMap<>();
+        HashMap<String, Integer> genderYear = new HashMap<>();
+
+        genderYear.put("f", 0);
+        genderYear.put("m", 0);
+
+        int femaleCount = 0;
+        int maleCount = 0;
 
         try {
+
             URL url = new URL(this.dataLocation + "yob" + year + ".txt");
             Scanner file = new Scanner(url.openStream());
 
@@ -331,15 +356,29 @@ public class BabyNames {
                 String currentName = file.next();
                 String[] currentNameArray = currentName.split(",");
                 if(currentNameArray[1].equals("F")) {
-                    femaleYear.put(currentNameArray[0], Integer.parseInt(currentNameArray[2]));
+                    femaleCount++;
+                    femaleYearRank.put(currentNameArray[0].toLowerCase(), femaleCount);
+                    genderYear.put("f", genderYear.get("f") + Integer.parseInt(currentNameArray[2]));
                 }
                 else {
-                    maleYear.put(currentNameArray[0], Integer.parseInt(currentNameArray[2]));
+                    maleCount++;
+                    maleYearRank.put(currentNameArray[0].toLowerCase(), maleCount);
+                    genderYear.put("m", genderYear.get("m") + Integer.parseInt(currentNameArray[2]));
+                }
+                if(totalPop.containsKey(currentNameArray[0].toLowerCase())) {
+                    totalPop.put(currentNameArray[0].toLowerCase(), (totalPop.get(currentNameArray[0].toLowerCase())) + Integer.parseInt(currentNameArray[2]));
+                }
+                else {
+                    totalPop.put(currentNameArray[0].toLowerCase(), Integer.parseInt(currentNameArray[2]));
                 }
             }
+            totalPopular.put(year, totalPop);
+            maleRankings.put(year, maleYearRank);
+            femaleRankings.put(year, femaleYearRank);
+            genderRankings.put(year, genderYear);
         }
-        catch (IOException ex) {
-            System.out.println("Website not found");
+        catch (FileNotFoundException e) {
+            System.out.println("File not found");
         }
     }
 
@@ -394,7 +433,7 @@ public class BabyNames {
     }
 
     //stores data in the data structures for ALL years
-    public void storeAllData() {
+    public void storeAllData() throws IOException {
         findRangeOfYears();
         if(typeURL == false) {
             for(int i = this.startYear; i < this.endYear + 1; i++) {
@@ -430,6 +469,15 @@ public class BabyNames {
             return true;
         }
     }
+
+    public boolean validYear(int year) {
+        if(startYear > year || year > endYear) {
+            System.out.println("Invalid year inputted");
+            return false;
+        }
+        return true;
+    }
+
     //returns the most popular name within a certain year
     public String mostPopularName(int year) {
         int max = 0;
