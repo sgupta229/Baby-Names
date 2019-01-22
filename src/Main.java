@@ -4,8 +4,6 @@ public class Main {
     public static void main(String[] args) throws IOException {
         BabyNames b = new BabyNames("https://www2.cs.duke.edu/courses/spring19/compsci307/assign/01_data/data/", true);
         b.storeAllData();
-        System.out.println(b.getStartYear());
-        System.out.println(b.getEndYear());
 //        System.out.println("Popularity of Florence (F) from 1880-1890:");
 //        System.out.println(b.rangeOfYears("Florence", "F", 1880, 1890));
 //        System.out.println("\n");

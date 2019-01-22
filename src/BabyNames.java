@@ -321,6 +321,8 @@ public class BabyNames {
             }
         }
         else {
+            System.out.println("Retrieving .txt files from website ... ");
+            System.out.println("This will take ~15 seconds depending on WiFi connection \n");
             for(int year = 1880; year < 2020; year++) {
                 String website = dataLocation + "yob" + year + ".txt";
                 if(checkURLValid(website)) {
@@ -335,115 +337,59 @@ public class BabyNames {
         }
     }
 
-    public void setDataInYearURL(int year) throws IOException {
-        HashMap<String, Integer> maleYearRank = new HashMap<>();
-        HashMap<String, Integer> femaleYearRank = new HashMap<>();
-        HashMap<String, Integer> totalPop = new HashMap<>();
-        HashMap<String, Integer> genderYear = new HashMap<>();
-
-        genderYear.put("f", 0);
-        genderYear.put("m", 0);
-
-        int femaleCount = 0;
-        int maleCount = 0;
-
-        try {
-
-            URL url = new URL(this.dataLocation + "yob" + year + ".txt");
-            Scanner file = new Scanner(url.openStream());
-
-            while(file.hasNext() == true) {
-                String currentName = file.next();
-                String[] currentNameArray = currentName.split(",");
-                if(currentNameArray[1].equals("F")) {
-                    femaleCount++;
-                    femaleYearRank.put(currentNameArray[0].toLowerCase(), femaleCount);
-                    genderYear.put("f", genderYear.get("f") + Integer.parseInt(currentNameArray[2]));
-                }
-                else {
-                    maleCount++;
-                    maleYearRank.put(currentNameArray[0].toLowerCase(), maleCount);
-                    genderYear.put("m", genderYear.get("m") + Integer.parseInt(currentNameArray[2]));
-                }
-                if(totalPop.containsKey(currentNameArray[0].toLowerCase())) {
-                    totalPop.put(currentNameArray[0].toLowerCase(), (totalPop.get(currentNameArray[0].toLowerCase())) + Integer.parseInt(currentNameArray[2]));
-                }
-                else {
-                    totalPop.put(currentNameArray[0].toLowerCase(), Integer.parseInt(currentNameArray[2]));
-                }
-            }
-            totalPopular.put(year, totalPop);
-            maleRankings.put(year, maleYearRank);
-            femaleRankings.put(year, femaleYearRank);
-            genderRankings.put(year, genderYear);
-        }
-        catch (FileNotFoundException e) {
-            System.out.println("File not found");
-        }
-    }
-
     //stores the data into the hashmaps for the specified year
-    public void setDataInYear(int year) {
+    public void setDataInYear(int year) throws IOException {
 
         HashMap<String, Integer> maleYearRank = new HashMap<>();
         HashMap<String, Integer> femaleYearRank = new HashMap<>();
         HashMap<String, Integer> totalPop = new HashMap<>();
         HashMap<String, Integer> genderYear = new HashMap<>();
-
         genderYear.put("f", 0);
         genderYear.put("m", 0);
-
         int femaleCount = 0;
         int maleCount = 0;
+        Scanner scanDoc;
 
-        try {
+        if(typeURL == true) {
+            URL url = new URL(dataLocation + "yob" + year + ".txt");
+            scanDoc = new Scanner(url.openStream());
+        }
+        else {
             String filename = dataLocation + "/yob" + year + ".txt";
             File test = new File(filename);
-
-            Scanner file = new Scanner(test);
-
-            while(file.hasNext() == true) {
-                String currentName = file.next();
-                String[] currentNameArray = currentName.split(",");
-                if(currentNameArray[1].equals("F")) {
-                    femaleCount++;
-                    femaleYearRank.put(currentNameArray[0].toLowerCase(), femaleCount);
-                    genderYear.put("f", genderYear.get("f") + Integer.parseInt(currentNameArray[2]));
-                }
-                else {
-                    maleCount++;
-                    maleYearRank.put(currentNameArray[0].toLowerCase(), maleCount);
-                    genderYear.put("m", genderYear.get("m") + Integer.parseInt(currentNameArray[2]));
-                }
-                if(totalPop.containsKey(currentNameArray[0].toLowerCase())) {
-                    totalPop.put(currentNameArray[0].toLowerCase(), (totalPop.get(currentNameArray[0].toLowerCase())) + Integer.parseInt(currentNameArray[2]));
-                }
-                else {
-                    totalPop.put(currentNameArray[0].toLowerCase(), Integer.parseInt(currentNameArray[2]));
-                }
+            scanDoc = new Scanner(test);
+        }
+        while(scanDoc.hasNext() == true) {
+            String currentName = scanDoc.next();
+            String[] currentNameArray = currentName.split(",");
+            if(currentNameArray[1].equals("F")) {
+                femaleCount++;
+                femaleYearRank.put(currentNameArray[0].toLowerCase(), femaleCount);
+                genderYear.put("f", genderYear.get("f") + Integer.parseInt(currentNameArray[2]));
             }
-            totalPopular.put(year, totalPop);
-            maleRankings.put(year, maleYearRank);
-            femaleRankings.put(year, femaleYearRank);
-            genderRankings.put(year, genderYear);
+            else {
+                maleCount++;
+                maleYearRank.put(currentNameArray[0].toLowerCase(), maleCount);
+                genderYear.put("m", genderYear.get("m") + Integer.parseInt(currentNameArray[2]));
+            }
+            if(totalPop.containsKey(currentNameArray[0].toLowerCase())) {
+                totalPop.put(currentNameArray[0].toLowerCase(), (totalPop.get(currentNameArray[0].toLowerCase())) + Integer.parseInt(currentNameArray[2]));
+            }
+            else {
+                totalPop.put(currentNameArray[0].toLowerCase(), Integer.parseInt(currentNameArray[2]));
+            }
         }
-        catch (FileNotFoundException e) {
-            System.out.println("File not found");
-        }
+        totalPopular.put(year, totalPop);
+        maleRankings.put(year, maleYearRank);
+        femaleRankings.put(year, femaleYearRank);
+        genderRankings.put(year, genderYear);
     }
 
     //stores data in the data structures for ALL years
     public void storeAllData() throws IOException {
         findRangeOfYears();
-        if(typeURL == false) {
-            for(int i = this.startYear; i < this.endYear + 1; i++) {
-                setDataInYear(i);
-            }
-        }
-        else {
-            for(int i = this.startYear; i < this.endYear + 1; i++) {
-                setDataInYearURL(i);
-            }
+        for(int i = this.startYear; i < this.endYear + 1; i++) {
+            setDataInYear(i);
         }
     }
 
