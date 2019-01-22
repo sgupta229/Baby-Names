@@ -43,6 +43,11 @@ public class Main {
         System.out.println("\n");
 
         System.out.println("Average gender rank over range");
-        System.out.println(b.averageGenderRankOverRange("Emma", "F", 2000, 2017));
+        System.out.println(b.averageGenderRankOverRange("Sam", "F", 1989, 2017));
+        System.out.println("\n");
+
+        System.out.println("Average rank over range");
+        System.out.println(b.averageRankOverRange("Sam", 1989, 2017));
+
     }
 }

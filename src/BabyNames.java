@@ -6,12 +6,12 @@ public class BabyNames {
 
     private HashMap<Integer, HashMap<String, Integer>> malePopular = new HashMap<>();
     private HashMap<Integer, HashMap<String, Integer>> femalePopular = new HashMap<>();
+    private HashMap<Integer, HashMap<String, Integer>> totalPopular = new HashMap<>();
     private int startYear = Integer.MAX_VALUE;
     private int endYear = Integer.MIN_VALUE;
     private HashMap<Integer, HashMap<String, Integer>> maleRankings = new HashMap<>();
     private HashMap<Integer, HashMap<String, Integer>> femaleRankings = new HashMap<>();
     private HashMap<Integer, HashMap<String, Integer>> noGenderRankings = new HashMap<>();
-
 
     //TO CHANGE LOCATION OF THE DATA
     //ENTER the pathname to the folder or the URL to the website
@@ -113,11 +113,10 @@ public class BabyNames {
 
         HashMap<String, Integer> maleYear = new HashMap<>();
         HashMap<String, Integer> femaleYear = new HashMap<>();
-
         HashMap<String, Integer> maleYearRank = new HashMap<>();
         HashMap<String, Integer> femaleYearRank = new HashMap<>();
+        HashMap<String, Integer> totalPop = new HashMap<>();
 
-        HashMap<String, Integer> noGenderYearRank = new HashMap<>();
         int femaleCount = 0;
         int maleCount = 0;
         int generalCount = 0;
@@ -137,23 +136,28 @@ public class BabyNames {
                 String[] currentNameArray = currentName.split(",");
                 if(currentNameArray[1].equals("F")) {
                     femaleCount++;
-                    femaleYear.put(currentNameArray[0], Integer.parseInt(currentNameArray[2]));
-                    femaleYearRank.put(currentNameArray[0], femaleCount);
+                    femaleYear.put(currentNameArray[0].toLowerCase(), Integer.parseInt(currentNameArray[2]));
+                    femaleYearRank.put(currentNameArray[0].toLowerCase(), femaleCount);
                 }
                 else {
                     maleCount++;
-                    maleYear.put(currentNameArray[0], Integer.parseInt(currentNameArray[2]));
-                    maleYearRank.put(currentNameArray[0], maleCount);
+                    maleYear.put(currentNameArray[0].toLowerCase(), Integer.parseInt(currentNameArray[2]));
+                    maleYearRank.put(currentNameArray[0].toLowerCase(), maleCount);
                 }
-                noGenderYearRank.put(currentNameArray[0], generalCount);
+                if(totalPop.containsKey(currentNameArray[0].toLowerCase())) {
+                    totalPop.put(currentNameArray[0].toLowerCase(), (totalPop.get(currentNameArray[0].toLowerCase())) + Integer.parseInt(currentNameArray[2]));
+                }
+                else {
+                    totalPop.put(currentNameArray[0].toLowerCase(), Integer.parseInt(currentNameArray[2]));
+                }
             }
 
             malePopular.put(year, maleYear);
             femalePopular.put(year, femaleYear);
+            totalPopular.put(year, totalPop);
 
             maleRankings.put(year, maleYearRank);
             femaleRankings.put(year, femaleYearRank);
-            noGenderRankings.put(year, noGenderYearRank);
         }
 
         catch (FileNotFoundException e) {
@@ -211,6 +215,9 @@ public class BabyNames {
     }
 
     public ArrayList<Integer> rangeOfYears(String name, String gender, int start, int end) {
+
+        name = name.toLowerCase();
+
         ArrayList<Integer> popOfPerson = new ArrayList<>();
         HashMap<Integer, HashMap<String, Integer>> use;
 
@@ -244,6 +251,8 @@ public class BabyNames {
     public String equalRankInRecentYear(String name, String gender, int year) {
         HashMap<Integer, HashMap<String, Integer>> use;
 
+        name = name.toLowerCase();
+
         if(validYear(year) == false) {
             System.out.println("Invalid year inputted");
             return "";
@@ -255,7 +264,13 @@ public class BabyNames {
             use = whichRankingMap(gender);
         }
 
+        if(use.get(year).get(name) == null) {
+            System.out.println("This name was not used in year " + year);
+            return "";
+        }
+
         int rankOfName = use.get(year).get(name);
+
         int useYear = endYear;
         while(true) {
             HashMap<String, Integer> checkMap = use.get(useYear);
@@ -270,7 +285,8 @@ public class BabyNames {
     }
 
     //method for question number 2
-    public int averageGenderRankOverRange(String name, String gender, int start, int end) {
+    public double averageGenderRankOverRange(String name, String gender, int start, int end) {
+        name = name.toLowerCase();
         int calculate = 0;
         HashMap<Integer, HashMap<String, Integer>> use;
         if (validYear(start) == false || validYear(end) == false) {
@@ -284,12 +300,52 @@ public class BabyNames {
             use = whichRankingMap(gender);
         }
         for(int i = start; i < end + 1; i++) {
+            if(use.get(i).get(name) == null) {
+                System.out.println("This name was not used as gender " + gender + " in year " + i);
+                return -1;
+            }
             calculate += use.get(i).get(name);
         }
-        return(calculate / (end - start + 1));
+        return (double) (calculate / (end - start + 1));
     }
 
+    //method for question number 3
+    public double averageRankOverRange(String name, int start, int end) {
+        name = name.toLowerCase();
 
+        if (validYear(start) == false || validYear(end) == false) {
+            System.out.println("Invalid year inputted");
+            return -1;
+        }
+
+        HashMap<String, Integer> use;
+        int averagePopularity = 0;
+        for(int i = start; i < end + 1; i++) {
+            use = totalPopular.get(i);
+            if(totalPopular.get(i).get(name) == null) {
+                System.out.println("This name was not used in year " + i);
+                return -1;
+            }
+            int yearPopularity = totalPopular.get(i).get(name);
+            int peopleAbove = 1;
+            for(String person : use.keySet()) {
+                if(use.get(person) > yearPopularity) {
+                    peopleAbove++;
+                }
+            }
+            averagePopularity += peopleAbove;
+        }
+        return averagePopularity / (end - start + 1);
+    }
+
+    //method for question number 4
+    public double averageRankForRecentYears(String name, int recentYears) {
+        name = name.toLowerCase();
+        return averageRankOverRange(name, this.endYear - recentYears + 1, this.endYear);
+    }
+
+    //method for question number 5
+    
 
 }
 
