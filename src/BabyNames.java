@@ -144,6 +144,10 @@ public class BabyNames {
     //QUESTION 4 - reports average rank of a name for the most recent number of years
     public double averageRankForRecentYears(String name, int recentYears) {
         name = name.toLowerCase();
+        if((endYear - startYear) < recentYears) {
+            System.out.println("Not enough years in data set");
+            return -1.0;
+        }
         return averageRankOverRange(name, this.endYear - recentYears + 1, this.endYear);
     }
 

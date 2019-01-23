@@ -61,12 +61,12 @@ public class Main {
         errorTest.storeAllData();
 
         //testing a fake URL
-        System.out.println("\nTESTING A FAKE URL");
+        System.out.println("\nTESTING A FAKE URL (fakeurl.org)");
         errorTest = new BabyNames("fakeurl.org", true);
         errorTest.storeAllData();
 
         //testing a URL with no .txt files
-        System.out.println("\nTESTING A URL WITH NO .TXT FILES");
+        System.out.println("\nTESTING A URL WITH NO .TXT FILES (google.com)");
         errorTest = new BabyNames("google.com", true);
         errorTest.storeAllData();
 
@@ -121,30 +121,93 @@ public class Main {
 
 
         //QUESTION 3 TEST
-        System.out.println("Average rank over range");
-        System.out.println(fileObject.averageRankOverRange("Sam", 2005, 2017));
+        System.out.println("\nTEST QUESTION #3");
+        //Mary started becoming more popular towards the end of the 80s
+        //Check rank of John for 1880 - 1885 and then 1880 - 1890
+        //Should be slightly greater than 1
+        System.out.println("Check average rank of John from 1880 - 1885");
+        System.out.println(fileObject.averageRankOverRange("John", 1880, 1885));
         System.out.println("\n");
-//
-//        //QUESTION 4 TEST
-//        System.out.println("RECENT YEARS RANK");
-//        System.out.println(b.averageRankForRecentYears("John", 5));
-//        System.out.println("\n");
-//
-//        //QUESTION 5 TEST
-//        System.out.println(b.mostPopularName(2000, 2017));
-//        System.out.println("\n");
-//
-//        //QUESTION 6 TEST
-//        System.out.println(b.mostPopularGender(2000, 2017));
-//        System.out.println("\n");
-//
-//        //QUESTION 7 TEST
-//        System.out.println(b.popularLetter("female", 2000, 2002));
-//        System.out.println("\n");
-//
-//        //QUESTION 8 TEST
-//        System.out.println(b.popularLetter("both", 2002, 2004));
-//        System.out.println("\n");
+        System.out.println("Check average rank of John from 1880 - 1890");
+        System.out.println(fileObject.averageRankOverRange("John", 1880, 1890));
+        System.out.println("\n");
+        //Emma is number 1 for all years except 2017 where she is the last female. Check and see if there is a valid
+        //rank
+        System.out.println("Check average rank of Emma from 2014 - 2017 (with an outlier from being #1)");
+        System.out.println(testFileObject.averageRankOverRange("Emma", 2014, 2017));
+        System.out.println("\n");
 
+        //QUESTION 4 TEST
+        //this method uses the same method as question #3
+        System.out.println("\nTEST QUESTION #4");
+        //Check invalid range
+        System.out.println("RECENT YEARS RANK url files with negative year input");
+        System.out.println(urlObject.averageRankForRecentYears("Michelle", -1));
+        System.out.println("\n");
+        //most popular name in the last few years
+        System.out.println("Check for average manually in short range of years");
+        System.out.println(urlObject.averageRankForRecentYears("Sahil", 4));
+        System.out.println("\n");
+        //check test file beyond range of years
+        System.out.println("RECENT YEARS RANK test files with greater than range input");
+        System.out.println(testFileObject.averageRankForRecentYears("Emma", 10));
+        System.out.println("\n");
+
+        //QUESTION 5 TEST
+        System.out.println("\nTEST QUESTION #5");
+        //check to see if the same name is most popular within a short range
+        System.out.println("Check for consistency of most popular name with a short range of years");
+        System.out.println(fileObject.mostPopularName(1940, 1942));
+        System.out.println("\n");
+        //return all time most popular name according to website of what most popular name is
+        System.out.println("\nSee what most popular name is from 1880 and cross check with website result");
+        System.out.println(urlObject.mostPopularName(1880, 2017));
+        System.out.println("\n");
+        //Use test files to check Emma in the 4 years. She was most popular for 3 of the years.
+        System.out.println("\nCheck to see if test files reveals emma as being most popular 3/4 years");
+        System.out.println(testFileObject.mostPopularName(2014, 2017));
+        System.out.println("\n");
+
+        //QUESTION 6 TEST
+        System.out.println("\nTEST QUESTION #6");
+        //check and see if males have always been the most popular gender
+        System.out.println("Check to make sure males have been most popular for all years");
+        System.out.println(fileObject.mostPopularGender(1880, 2017));
+        System.out.println("\n");
+        //check to see if functino works across one year and can output female
+        System.out.println("Check to see female popularity in just one year");
+        System.out.println(testFileObject.mostPopularGender(2017, 2017));
+        System.out.println("\n");
+        //check test files and see that female should be ranked first for all years
+        System.out.println("Check to see that female should be most popular gender across all 4 years in test files");
+        System.out.println(testFileObject.mostPopularGender(2014, 2017));
+        System.out.println("\n");
+
+        //QUESTION 7 and 8 TEST
+        System.out.println("\nTEST QUESTION #7 and #8 (they use the same method");
+        //check females in test files
+        System.out.println("Check to see which female letter is most popular in test files");
+        System.out.println(testFileObject.popularLetter("female", 2014, 2017));
+        System.out.println("\n");
+        //check method for males for test files
+        System.out.println("Check to see which male letter is most popular in test files");
+        System.out.println(testFileObject.popularLetter("male", 2014, 2017));
+        System.out.println("\n");
+        //check method for both males and females
+        System.out.println("Check to see which letter is most popular in test files");
+        System.out.println(testFileObject.popularLetter("both", 2014, 2017));
+        System.out.println("\n");
+        //check method for females in actual data set from 2000-2017
+        System.out.println("Check to see which letter is most popular for females in actual data set (URL) from 2000-2017");
+        System.out.println(fileObject.popularLetter("female", 2000, 2017));
+        System.out.println("\n");
+        //check method for males in actual data set from 2000-2017
+        System.out.println("Check to see which letter is most popular for males in actual data set (URL) from 2000-2017");
+        System.out.println(fileObject.popularLetter("male", 2000, 2017));
+        System.out.println("\n");
+        //check method for males in actual data set from 2000-2017
+        System.out.println("Check to see which letter is most popular for both males and females in actual data set (URL) from 2000-2017");
+        System.out.println(fileObject.popularLetter("both", 2000, 2017));
+        System.out.println("\n");
     }
 }
