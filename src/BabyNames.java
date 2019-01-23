@@ -47,10 +47,7 @@ public class BabyNames {
         name = name.toLowerCase();
         ArrayList<Integer> popOfPerson = new ArrayList<>();
         HashMap<Integer, HashMap<String, Integer>> use;
-        if(validYear(start) == false || validYear(end) == false) {
-            return popOfPerson;
-        }
-        if(validGender(gender) == false) {
+        if(validYear(start) == false || validYear(end) == false || validGender(gender) == false) {
             return popOfPerson;
         }
         else {
@@ -73,10 +70,7 @@ public class BabyNames {
     public String equalRankInRecentYear(String name, String gender, int year) {
         HashMap<Integer, HashMap<String, Integer>> use;
         name = name.toLowerCase();
-        if(validYear(year) == false) {
-            return "";
-        }
-        if (validGender(gender) == false) {
+        if(validYear(year) == false || validGender(gender) == false) {
             return "";
         }
         else {
@@ -105,10 +99,7 @@ public class BabyNames {
         name = name.toLowerCase();
         double calculate = 0;
         HashMap<Integer, HashMap<String, Integer>> use;
-        if (validYear(start) == false || validYear(end) == false) {
-            return -1;
-        }
-        if(validGender(gender) == false) {
+        if (validYear(start) == false || validYear(end) == false || validGender(gender) == false) {
             return -1;
         }
         else {
@@ -127,11 +118,9 @@ public class BabyNames {
     //QUESTION 3 - report average rank of the name regardless of gender
     public double averageRankOverRange(String name, int start, int end) {
         name = name.toLowerCase();
-
         if (validYear(start) == false || validYear(end) == false) {
             return -1;
         }
-
         HashMap<String, Integer> use;
         double averagePopularity = 0;
         for(int i = start; i < end + 1; i++) {
@@ -160,11 +149,9 @@ public class BabyNames {
 
     //QUESTION 5 - report which name was ranked first most often AND how many years it came first
     public String mostPopularName(int start, int end) {
-
         if (validYear(start) == false || validYear(end) == false) {
             return "";
         }
-
         HashMap<String, Integer> topRankers = new HashMap<>();
         for(int i = start; i < end + 1; i++) {
             String topPerson = mostPopularName(i);
@@ -189,9 +176,7 @@ public class BabyNames {
 
     //QUESTION 6 - report which gender was more popular and how many years this gender was the most popular name
     public String mostPopularGender(int start, int end) {
-        if (validYear(start) == false || validYear(end) == false) {
-            return "";
-        }
+        if (validYear(start) == false || validYear(end) == false) return "";
         int maleWins = 0;
         int femaleWins = 0;
         for(int i = start; i < end + 1; i++) {
@@ -233,18 +218,14 @@ public class BabyNames {
     public String popularLetter(String gender, int start, int end) {
         HashMap<Character, Integer> letterCounts = new HashMap<>();
         HashMap<Integer, HashMap<String, Integer>> use;
-        if (validYear(start) == false || validYear(end) == false) {
-            return "";
-        }
-        if(gender.toLowerCase().equals("f") || gender.toLowerCase().equals("female")) {
-            use = femaleRankings;
-        }
-        else if(gender.toLowerCase().equals("m") || gender.toLowerCase().equals("male")) {
-            use = maleRankings;
-        }
-        else {
+        if (validYear(start) == false || validYear(end) == false) return "";
+        if(gender.equals("both")) {
             use = totalPopular;
         }
+        else if(validGender(gender) == true) {
+            use = whichRankingMap(gender);
+        }
+        else return "";
         for(int i = start; i < end + 1; i++) {
             for(String person : use.get(i).keySet()) {
                 if(letterCounts.containsKey(person.charAt(0))) {
@@ -282,10 +263,7 @@ public class BabyNames {
     //THESE ARE HELPER METHODS / HELP SET UP THE DATA//
     ///////////////////////////////////////////////////
 
-    //checks to make sure user inputted a valid year into a method
-
-    //checks to see what the range of years the dataset has
-
+    //checks to see if a URL is valid
     public boolean checkURLValid(String checkThisWebsite) {
         try {
             URL url = new URL(checkThisWebsite);
@@ -298,34 +276,19 @@ public class BabyNames {
             }
         }
         catch (IOException e) {
-            System.out.println("Finding .txt files in URL ... ");
             return false;
         }
     }
 
-    public void findRangeOfYears() throws IOException {
-        if(typeURL == false) {
-            for(int year = 1850; year < 2020; year++) {
-                if(typeURL == false) {
-                    String filename = dataLocation + "/yob" + year + ".txt";
-                    File f = new File(filename);
-                    if(f.getAbsoluteFile().exists() ==  true) {
-                        if (year < this.startYear) {
-                            this.startYear = year;
-                        }
-                        if (year > this.endYear) {
-                            this.endYear = year;
-                        }
-                    }
-                }
-            }
-        }
-        else {
-            System.out.println("Retrieving .txt files from website ... ");
-            System.out.println("This will take ~15 seconds depending on WiFi connection \n");
-            for(int year = 1880; year < 2020; year++) {
-                String website = dataLocation + "yob" + year + ".txt";
-                if(checkURLValid(website)) {
+    //checks to see what the range of years the dataset has in local files
+    public void findRangeOfYears() {
+        System.out.println("Compiling data ... ");
+        System.out.println("Will take ~5 seconds");
+        for(int year = 1850; year < 2020; year++) {
+            if(typeURL == false) {
+                String filename = dataLocation + "/yob" + year + ".txt";
+                File f = new File(filename);
+                if(f.getAbsoluteFile().exists() ==  true) {
                     if (year < this.startYear) {
                         this.startYear = year;
                     }
@@ -336,10 +299,25 @@ public class BabyNames {
             }
         }
     }
+    //checks to see what the range of years the dataset has for a URL
+    public void findRangeOfYearsURL() {
+        System.out.println("Retrieving .txt files from website ... ");
+        System.out.println("This will take ~15 seconds depending on WiFi connection");
+        for(int year = 1870; year < 2020; year++) {
+            String website = dataLocation + "yob" + year + ".txt";
+            if(checkURLValid(website)) {
+                if (year < this.startYear) {
+                    this.startYear = year;
+                }
+                if (year > this.endYear) {
+                    this.endYear = year;
+                }
+            }
+        }
+    }
 
     //stores the data into the hashmaps for the specified year
     public void setDataInYear(int year) throws IOException {
-
         HashMap<String, Integer> maleYearRank = new HashMap<>();
         HashMap<String, Integer> femaleYearRank = new HashMap<>();
         HashMap<String, Integer> totalPop = new HashMap<>();
@@ -349,7 +327,6 @@ public class BabyNames {
         int femaleCount = 0;
         int maleCount = 0;
         Scanner scanDoc;
-
         if(typeURL == true) {
             URL url = new URL(dataLocation + "yob" + year + ".txt");
             scanDoc = new Scanner(url.openStream());
@@ -387,7 +364,15 @@ public class BabyNames {
 
     //stores data in the data structures for ALL years
     public void storeAllData() throws IOException {
-        findRangeOfYears();
+        if(typeURL == false) {
+            findRangeOfYears();
+        }
+        else {
+            findRangeOfYearsURL();
+        }
+        if(this.startYear == Integer.MAX_VALUE || this.endYear == Integer.MIN_VALUE) {
+            System.out.println("The source is empty or does not contain valid data.");
+        }
         for(int i = this.startYear; i < this.endYear + 1; i++) {
             setDataInYear(i);
         }
@@ -418,7 +403,7 @@ public class BabyNames {
 
     public boolean validYear(int year) {
         if(startYear > year || year > endYear) {
-            System.out.println("Invalid year inputted");
+            System.out.println("Invalid year(s) inputted");
             return false;
         }
         return true;
