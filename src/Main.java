@@ -89,20 +89,41 @@ public class Main {
         //////////////////
 
 
-//        //QUESTION 1 TESTS
-//        System.out.println("Find matching rank of John (M) in 1980");
-//        System.out.println(b.equalRankInRecentYear("John", "m", 1980));
-//        System.out.println("\n");
-//
-//        //QUESTION 2 TEST
-//        System.out.println("Average gender rank over range");
-//        System.out.println(b.averageGenderRankOverRange("Sam", "F", 2004, 2017));
-//        System.out.println("\n");
-//
-//        //QUESTION 3 TEST
-//        System.out.println("Average rank over range");
-//        System.out.println(b.averageRankOverRange("Sam", 2005, 2017));
-//        System.out.println("\n");
+        //QUESTION 1 TESTS
+        System.out.println("\nTEST QUESTION #1");
+        //see if method works with local files
+        System.out.println("Find matching rank of John (M) in 1980 (local files)");
+        System.out.println(fileObject.equalRankInRecentYear("John", "m", 1980));
+        System.out.println("\n");
+        //see if method works with URL and matches local file result
+        System.out.println("Find matching rank of John (M) in 1980 (url files)");
+        System.out.println(urlObject.equalRankInRecentYear("John", "m", 1980));
+        System.out.println("\n");
+        //see if method works with test files with John not being in the file
+        System.out.println("Find matching rank of John (M) in 2016 (test files)");
+        System.out.println(testFileObject.equalRankInRecentYear("John", "m", 2016));
+        System.out.println("\n");
+
+        //QUESTION 2 TEST
+        System.out.println("\nTEST QUESTION #2");
+        //see if local files produce no rank if not ranked in one of the years
+        System.out.println("Average gender rank over range (local files)");
+        System.out.println(fileObject.averageGenderRankOverRange("Volney", "F", 2004, 2017));
+        System.out.println("\n");
+        //check speed of url object for ALL years
+        System.out.println("Average gender rank over range (url files)");
+        System.out.println(urlObject.averageGenderRankOverRange("John", "m", 1880, 2017));
+        System.out.println("\n");
+        //check rank with test files for only one year to see if it is correct
+        System.out.println("Average gender rank over range (test files - one year)");
+        System.out.println(testFileObject.averageGenderRankOverRange("Brio", "m", 2017, 2017));
+        System.out.println("\n");
+
+
+        //QUESTION 3 TEST
+        System.out.println("Average rank over range");
+        System.out.println(fileObject.averageRankOverRange("Sam", 2005, 2017));
+        System.out.println("\n");
 //
 //        //QUESTION 4 TEST
 //        System.out.println("RECENT YEARS RANK");
@@ -124,6 +145,6 @@ public class Main {
 //        //QUESTION 8 TEST
 //        System.out.println(b.popularLetter("both", 2002, 2004));
 //        System.out.println("\n");
-//
+
     }
 }

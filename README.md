@@ -29,14 +29,15 @@ Data sets used and created:
 I used three different data sets. I used the URL with the 
 text files (https://www2.cs.duke.edu/courses/compsci307/spring19/assign/01_data/data/), 
 I downloaded the text files and used the data set on my local file system, and I made a test data set
-with a few names and values to test.
+with a few names and values to test. The test data set has a lot less names to see if my methods output the correct
+things and do the right thing.
 
 How to change the data set used in the code: 
 
 I have one class called BabyNames. I have a constructor that takes in two arguments. 
 The first argument is either the full pathname to the folder with the .txt files (a string) or
 the URL with the .txt files (also a string). The second argument is a boolean that represents whether or not the 
-dataset is a url or not. "true" means it IS a url and "false" means it is not.
+dataset is a url or not. "true" means it IS a url and "false" means it is not. 
 
 Known Bugs:
 
@@ -67,6 +68,11 @@ which represent the start and end years in the data set. I also have typeURL var
 whether the data set is a url or a file pathname. 
 
 -----------------------------------
+
+TESTS:
+
+For each method I ran 3 tests. I essentially tried to run each test using the URL data set, the local file data set, 
+and the test data set.
 
 My code checks for invalid URL's, URL's that do not have proper .txt files, improper gender inputs, and invalid year
 inputs based on the range of txt files in the data set. The code is fairly robust and should be able to handle 
